@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kalkulator paliwa i porównanie pojazdów</title>
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #e2e8f0;
+        --accent: #0f172a;
+        --accent-2: #16a34a;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Inter, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      .grid {
+        display: grid;
+        gap: 20px;
+      }
+      .top-grid {
+        grid-template-columns: 1.3fr 0.7fr;
+      }
+      .main-grid {
+        grid-template-columns: 340px 1fr;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+      }
+      .badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: #e2e8f0;
+        font-size: 13px;
+        margin-bottom: 12px;
+      }
+      .prices-grid, .vehicle-grid {
+        display: grid;
+        gap: 12px;
+      }
+      .prices-grid {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      }
+      .vehicle-grid {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      }
+      .price-box, .metric-box, .rank-item {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 14px;
+        background: #fff;
+      }
+</html>
