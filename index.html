@@ -2,7 +2,7 @@
 <html lang="pl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Kalkulator paliwa i porównanie pojazdów</title>
     <style>
       :root {
@@ -11,39 +11,123 @@
         --text: #0f172a;
         --muted: #64748b;
         --border: #e2e8f0;
-        --accent: #0f172a;
-        --accent-2: #16a34a;
+        --primary: #0f172a;
+        --success: #16a34a;
+        --danger: #b91c1c;
       }
 
       * { box-sizing: border-box; }
+
       body {
         margin: 0;
-        font-family: Inter, Arial, sans-serif;
+        font-family: Arial, sans-serif;
         background: var(--bg);
         color: var(--text);
       }
+
       .container {
         max-width: 1200px;
         margin: 0 auto;
         padding: 24px;
       }
+
       .grid {
         display: grid;
         gap: 20px;
       }
+
       .top-grid {
-        grid-template-columns: 1.3fr 0.7fr;
+        grid-template-columns: 1.4fr 0.8fr;
       }
+
       .main-grid {
-        grid-template-columns: 340px 1fr;
+        grid-template-columns: 320px 1fr;
       }
+
       .card {
         background: var(--card);
         border: 1px solid var(--border);
-        border-radius: 24px;
+        border-radius: 20px;
         padding: 20px;
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
       }
+
+      .prices-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      }
+
+      .price-box, .metric-box, .rank-item, .vehicle-card {
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 14px;
+        background: #fff;
+      }
+
+      .vehicle-grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .price-value, .metric-value {
+        font-size: 28px;
+        font-weight: 700;
+        margin-top: 6px;
+      }
+
+      .field, .select, button {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        font-size: 14px;
+      }
+
+      button {
+        cursor: pointer;
+        background: white;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .actions button {
+        width: auto;
+      }
+
+      .stack {
+        display: grid;
+        gap: 14px;
+      }
+
+      .two-col {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .result-box {
+        margin-top: 14px;
+        padding: 16px;
+        border-radius: 16px;
+        background: var(--primary);
+        color: white;
+      }
+
       .badge {
         display: inline-block;
         padding: 6px 12px;
@@ -52,20 +136,432 @@
         font-size: 13px;
         margin-bottom: 12px;
       }
-      .prices-grid, .vehicle-grid {
-        display: grid;
-        gap: 12px;
+
+      .winner {
+        display: inline-block;
+        background: var(--success);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
       }
-      .prices-grid {
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+
+      .error-box {
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: var(--danger);
+        padding: 12px;
+        border-radius: 12px;
       }
-      .vehicle-grid {
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+
+      @media (max-width: 900px) {
+        .top-grid, .main-grid, .two-col {
+          grid-template-columns: 1fr;
+        }
       }
-      .price-box, .metric-box, .rank-item {
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        padding: 14px;
-        background: #fff;
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="grid top-grid">
+        <section class="card">
+          <div class="badge">Polska • GitHub Pages + JSON</div>
+          <h1>Ceny paliw, kalkulator spalania i porównanie pojazdów</h1>
+          <p class="muted">
+            Strona wczytuje aktualne ceny z pliku JSON generowanego codziennie przez GitHub Actions.
+          </p>
+          <div id="errorBox"></div>
+          <div id="priceCards" class="prices-grid"></div>
+        </section>
+
+        <aside class="card stack">
+          <div>
+            <strong>Źródło danych</strong>
+            <div class="muted" id="sourceName">Ładowanie...</div>
+            <div class="muted" id="updatedAt">Ładowanie...</div>
+          </div>
+          <div>
+            <strong>Uwaga</strong>
+            <div class="muted">
+              Cena prądu jest przechowywana w JSON i może być edytowana ręcznie.
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="grid main-grid" style="margin-top: 20px;">
+        <aside class="card">
+          <h2>Aktualne ceny</h2>
+          <div id="priceEditor" class="stack"></div>
+        </aside>
+
+        <main class="stack">
+          <section class="card">
+            <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;">
+              <h2 style="margin:0;">Pojazdy do porównania</h2>
+              <div class="actions">
+                <button class="btn-primary" id="addIceBtn" type="button">Dodaj auto</button>
+                <button id="addEvBtn" type="button">Dodaj EV</button>
+              </div>
+            </div>
+            <div id="vehicles" class="vehicle-grid" style="margin-top:16px;"></div>
+          </section>
+
+          <section class="card">
+            <h2>Ranking kosztów</h2>
+            <div id="ranking" class="stack"></div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      const fuelMeta = {
+        pb95: { label: "Pb95", unit: "zł/l" },
+        pb98: { label: "Pb98", unit: "zł/l" },
+        on: { label: "ON", unit: "zł/l" },
+        lpg: { label: "LPG", unit: "zł/l" },
+        electricity: { label: "Prąd", unit: "zł/kWh" },
+      };
+
+      const state = {
+        prices: {
+          pb95: 6.19,
+          pb98: 6.79,
+          on: 7.79,
+          lpg: 3.84,
+          electricity: 1.04,
+        },
+        source: null,
+        updatedAt: null,
+        vehicles: [
+          { id: crypto.randomUUID(), name: "Auto 1", type: "ice", fuelType: "pb95", consumption: 7.2, distance: 350, chargingLoss: 10 },
+          { id: crypto.randomUUID(), name: "EV 1", type: "ev", fuelType: "electricity", consumption: 17.5, distance: 350, chargingLoss: 10 },
+        ],
+      };
+
+      function formatCurrency(value) {
+        return new Intl.NumberFormat("pl-PL", {
+          style: "currency",
+          currency: "PLN",
+          maximumFractionDigits: 2,
+        }).format(Number.isFinite(value) ? value : 0);
       }
+
+      function formatNumber(value, digits = 2) {
+        return new Intl.NumberFormat("pl-PL", {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: digits,
+        }).format(Number.isFinite(value) ? value : 0);
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function showError(message) {
+        document.getElementById("errorBox").innerHTML =
+          '<div class="error-box">' + escapeHtml(message) + "</div>";
+      }
+
+      function clearError() {
+        document.getElementById("errorBox").innerHTML = "";
+      }
+
+      function computeVehicle(vehicle) {
+        const distance = Number(vehicle.distance) || 0;
+        const consumption = Number(vehicle.consumption) || 0;
+        const chargingLoss = Number(vehicle.chargingLoss) || 0;
+
+        if (vehicle.type === "ev") {
+          const baseKwh = (distance / 100) * consumption;
+          const adjustedKwh = baseKwh * (1 + chargingLoss / 100);
+          const totalCost = adjustedKwh * (Number(state.prices.electricity) || 0);
+
+          return {
+            energyUsed: adjustedKwh,
+            totalCost: totalCost,
+            costPer100: consumption * (1 + chargingLoss / 100) * (Number(state.prices.electricity) || 0),
+            unitLabel: "kWh",
+            priceLabel: "Prąd",
+            priceUsed: Number(state.prices.electricity) || 0,
+          };
+        }
+
+        const liters = (distance / 100) * consumption;
+        const selectedPrice = Number(state.prices[vehicle.fuelType]) || 0;
+        const totalCost = liters * selectedPrice;
+
+        return {
+          energyUsed: liters,
+          totalCost: totalCost,
+          costPer100: consumption * selectedPrice,
+          unitLabel: "l",
+          priceLabel: fuelMeta[vehicle.fuelType].label,
+          priceUsed: selectedPrice,
+        };
+      }
+
+      function renderPriceCards() {
+        const container = document.getElementById("priceCards");
+        container.innerHTML = Object.keys(fuelMeta).map((key) => {
+          const meta = fuelMeta[key];
+          return `
+            <div class="price-box">
+              <div class="muted">${meta.label}</div>
+              <div class="price-value">${formatNumber(state.prices[key])}</div>
+              <div class="muted">${meta.unit}</div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function renderPriceEditor() {
+        const container = document.getElementById("priceEditor");
+        container.innerHTML = Object.keys(fuelMeta).map((key) => {
+          const meta = fuelMeta[key];
+          return `
+            <div>
+              <label class="muted" for="price-${key}">${meta.label}</label>
+              <input class="field" id="price-${key}" type="number" step="0.01" value="${state.prices[key]}" />
+              <div class="muted" style="font-size:12px;margin-top:4px;">${meta.unit}</div>
+            </div>
+          `;
+        }).join("");
+
+        Object.keys(fuelMeta).forEach((key) => {
+          document.getElementById("price-" + key).addEventListener("input", (e) => {
+            state.prices[key] = Number(e.target.value) || 0;
+            renderAll();
+          });
+        });
+      }
+
+      function addVehicle(type) {
+        const number = state.vehicles.filter((v) => v.type === type).length + 1;
+        state.vehicles.push({
+          id: crypto.randomUUID(),
+          name: type === "ev" ? "EV " + number : "Auto " + number,
+          type: type,
+          fuelType: type === "ev" ? "electricity" : "pb95",
+          consumption: type === "ev" ? 18 : 7,
+          distance: 300,
+          chargingLoss: 10,
+        });
+        renderAll();
+      }
+
+      function updateVehicle(id, key, value) {
+        state.vehicles = state.vehicles.map((vehicle) => {
+          if (vehicle.id !== id) return vehicle;
+          const updated = { ...vehicle, [key]: value };
+          if (key === "type") {
+            updated.fuelType = value === "ev" ? "electricity" : "pb95";
+          }
+          return updated;
+        });
+        renderAll();
+      }
+
+      function removeVehicle(id) {
+        if (state.vehicles.length === 1) return;
+        state.vehicles = state.vehicles.filter((vehicle) => vehicle.id !== id);
+        renderAll();
+      }
+
+      function renderVehicles() {
+        const cheapest = [...state.vehicles]
+          .map((vehicle) => ({ vehicle, metrics: computeVehicle(vehicle) }))
+          .sort((a, b) => a.metrics.totalCost - b.metrics.totalCost)[0];
+
+        const cheapestId = cheapest ? cheapest.vehicle.id : null;
+        const container = document.getElementById("vehicles");
+
+        container.innerHTML = state.vehicles.map((vehicle) => {
+          const metrics = computeVehicle(vehicle);
+
+          const fuelSelect = vehicle.type === "ice"
+            ? `
+              <div style="margin-top:14px;">
+                <label class="muted">Rodzaj paliwa</label>
+                <select class="select" data-id="${vehicle.id}" data-key="fuelType">
+                  <option value="pb95" ${vehicle.fuelType === "pb95" ? "selected" : ""}>Pb95</option>
+                  <option value="pb98" ${vehicle.fuelType === "pb98" ? "selected" : ""}>Pb98</option>
+                  <option value="on" ${vehicle.fuelType === "on" ? "selected" : ""}>ON</option>
+                  <option value="lpg" ${vehicle.fuelType === "lpg" ? "selected" : ""}>LPG</option>
+                </select>
+              </div>
+            `
+            : `
+              <div style="margin-top:14px;">
+                <label class="muted">Straty ładowania (%)</label>
+                <input class="field" type="number" step="1" data-id="${vehicle.id}" data-key="chargingLoss" value="${vehicle.chargingLoss}" />
+              </div>
+            `;
+
+          return `
+            <div class="vehicle-card">
+              <div style="display:flex;gap:12px;align-items:flex-start;justify-content:space-between;">
+                <div style="flex:1;">
+                  <label class="muted">Nazwa pojazdu</label>
+                  <input class="field" data-id="${vehicle.id}" data-key="name" value="${escapeHtml(vehicle.name)}" />
+                </div>
+                <button data-remove="${vehicle.id}" type="button" style="width:auto;">Usuń</button>
+              </div>
+
+              <div class="two-col" style="margin-top:14px;">
+                <button data-set-type="ice" data-id="${vehicle.id}" type="button" ${vehicle.type === "ice" ? 'style="background:#dbeafe;"' : ""}>Spalinowe</button>
+                <button data-set-type="ev" data-id="${vehicle.id}" type="button" ${vehicle.type === "ev" ? 'style="background:#dbeafe;"' : ""}>Elektryczne</button>
+              </div>
+
+              ${fuelSelect}
+
+              <div class="two-col" style="margin-top:14px;">
+                <div>
+                  <label class="muted">${vehicle.type === "ev" ? "Zużycie energii" : "Spalanie"}</label>
+                  <input class="field" type="number" step="0.1" data-id="${vehicle.id}" data-key="consumption" value="${vehicle.consumption}" />
+                  <div class="muted" style="font-size:12px;margin-top:4px;">${vehicle.type === "ev" ? "kWh / 100 km" : "l / 100 km"}</div>
+                </div>
+                <div>
+                  <label class="muted">Dystans</label>
+                  <input class="field" type="number" step="1" data-id="${vehicle.id}" data-key="distance" value="${vehicle.distance}" />
+                  <div class="muted" style="font-size:12px;margin-top:4px;">km</div>
+                </div>
+              </div>
+
+              <div class="two-col" style="margin-top:14px;">
+                <div class="metric-box">
+                  <div class="muted">Zużycie na trasie</div>
+                  <div class="metric-value">${formatNumber(metrics.energyUsed)} ${metrics.unitLabel}</div>
+                </div>
+                <div class="metric-box">
+                  <div class="muted">Koszt / 100 km</div>
+                  <div class="metric-value">${formatCurrency(metrics.costPer100)}</div>
+                </div>
+              </div>
+
+              <div class="result-box">
+                <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;">
+                  <div>
+                    <div style="color:#cbd5e1;font-size:14px;">Łączny koszt przejazdu</div>
+                    <div style="font-size:30px;font-weight:700;">${formatCurrency(metrics.totalCost)}</div>
+                  </div>
+                  ${cheapestId === vehicle.id ? '<span class="winner">Najtaniej</span>' : ""}
+                </div>
+                <div style="margin-top:10px;color:#cbd5e1;font-size:14px;">
+                  Stawka: ${metrics.priceLabel} • ${formatNumber(metrics.priceUsed)} ${vehicle.type === "ev" ? "zł/kWh" : "zł/l"}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        container.querySelectorAll("[data-id][data-key]").forEach((el) => {
+          const handler = (e) => {
+            const id = e.target.dataset.id;
+            const key = e.target.dataset.key;
+            const value = ["consumption", "distance", "chargingLoss"].includes(key)
+              ? Number(e.target.value)
+              : e.target.value;
+            updateVehicle(id, key, value);
+          };
+          el.addEventListener("input", handler);
+          el.addEventListener("change", handler);
+        });
+
+        container.querySelectorAll("[data-remove]").forEach((btn) => {
+          btn.addEventListener("click", (e) => removeVehicle(e.target.dataset.remove));
+        });
+
+        container.querySelectorAll("[data-set-type]").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            updateVehicle(e.target.dataset.id, "type", e.target.dataset.setType);
+          });
+        });
+      }
+
+      function renderRanking() {
+        const ranking = [...state.vehicles]
+          .map((vehicle) => ({ vehicle, metrics: computeVehicle(vehicle) }))
+          .sort((a, b) => a.metrics.totalCost - b.metrics.totalCost);
+
+        const cheapestCost = ranking.length ? ranking[0].metrics.totalCost : 0;
+
+        document.getElementById("ranking").innerHTML = ranking.map((entry, index) => {
+          const vehicle = entry.vehicle;
+          const metrics = entry.metrics;
+          const diff = metrics.totalCost - cheapestCost;
+
+          return `
+            <div class="rank-item">
+              <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;">
+                <div>
+                  <strong>#${index + 1} ${escapeHtml(vehicle.name)}</strong>
+                  <div class="muted" style="margin-top:4px;">
+                    ${vehicle.type === "ev" ? "EV" : fuelMeta[vehicle.fuelType].label}
+                    • Dystans ${formatNumber(vehicle.distance, 0)} km
+                    • ${vehicle.type === "ev" ? "Zużycie" : "Spalanie"} ${formatNumber(vehicle.consumption)} / 100 km
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:24px;font-weight:700;">${formatCurrency(metrics.totalCost)}</div>
+                  <div class="muted">${index === 0 ? "Najniższy koszt" : "+" + formatCurrency(diff) + " względem lidera"}</div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function renderMeta() {
+        document.getElementById("sourceName").textContent = state.source
+          ? state.source.name + " — " + state.source.url
+          : "Brak danych o źródle";
+
+        document.getElementById("updatedAt").textContent = state.updatedAt
+          ? "Aktualizacja JSON: " + new Date(state.updatedAt).toLocaleString("pl-PL")
+          : "Brak daty aktualizacji";
+      }
+
+      function renderAll() {
+        renderPriceCards();
+        renderPriceEditor();
+        renderVehicles();
+        renderRanking();
+        renderMeta();
+      }
+
+      async function loadFuelPrices() {
+        try {
+          clearError();
+          const response = await fetch("./data/fuel_prices.json", { cache: "no-store" });
+          if (!response.ok) {
+            throw new Error("Nie udało się wczytać JSON (" + response.status + ")");
+          }
+          const data = await response.json();
+
+          state.prices = { ...state.prices, ...data.prices };
+          state.source = data.source || null;
+          state.updatedAt = data.updated_at || null;
+
+          renderAll();
+        } catch (error) {
+          console.error(error);
+          showError(error.message || "Nie udało się wczytać danych.");
+          renderAll();
+        }
+      }
+
+      document.getElementById("addIceBtn").addEventListener("click", () => addVehicle("ice"));
+      document.getElementById("addEvBtn").addEventListener("click", () => addVehicle("ev"));
+
+      renderAll();
+      loadFuelPrices();
+    </script>
+  </body>
 </html>
