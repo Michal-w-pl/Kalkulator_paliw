@@ -1,455 +1,498 @@
 <!doctype html>
 <html lang="pl">
   <head>
-    <meta name="description" content="Aktualne ceny paliw w Polsce, kalkulator spalania, koszt przejazdu dla aut spalinowych i elektrycznych oraz porównanie pojazdów.">
-    <meta name="robots" content="index,follow">
-    <meta property="og:title" content="Ceny paliw i kalkulator kosztów przejazdu">
-    <meta property="og:description" content="Aktualne ceny ON, Pb95, Pb98, LPG oraz kalkulator kosztów dla aut spalinowych i EV.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://twoja-domena.pl/">
-    <meta property="og:image" content="https://twoja-domena.pl/og-image.png">
-    <meta name="twitter:card" content="summary_large_image">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Kalkulator paliwa i porównanie pojazdów</title>
+    <title>Ceny paliw i kalkulator kosztów przejazdu</title>
+
+    <meta
+      name="description"
+      content="Aktualne ceny paliw w Polsce, kalkulator spalania, koszt przejazdu dla aut spalinowych i elektrycznych oraz porównanie pojazdów."
+    />
+    <meta name="robots" content="index,follow" />
+
+    <meta property="og:title" content="Ceny paliw i kalkulator kosztów przejazdu" />
+    <meta
+      property="og:description"
+      content="Aktualne ceny ON, Pb95, Pb98, LPG oraz kalkulator kosztów dla aut spalinowych i EV."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://Michal-w-pl.github.io/fuel-prices-site/" />
+    <meta property="og:image" content="https://Michal-w-pl.github.io/fuel-prices-site/og-image.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Ceny paliw i kalkulator kosztów przejazdu" />
+    <meta
+      name="twitter:description"
+      content="Aktualne ceny paliw w Polsce i kalkulator kosztu przejazdu dla aut spalinowych oraz elektrycznych."
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Kalkulator paliwa i kosztu przejazdu",
+        "url": "https://Michal-w-pl.github.io/fuel-prices-site/",
+        "applicationCategory": "UtilityApplication",
+        "operatingSystem": "Any",
+        "description": "Kalkulator kosztu przejazdu dla aut spalinowych i elektrycznych z aktualnymi cenami paliw w Polsce.",
+        "inLanguage": "pl-PL"
+      }
+    </script>
+
     <style>
-  :root {
-    --bg: #f8fafc;
-    --card: rgba(255, 255, 255, 0.9);
-    --card-strong: #ffffff;
-    --text: #0f172a;
-    --muted: #64748b;
-    --border: #e2e8f0;
-    --primary: #0f172a;
-    --primary-soft: #e2e8f0;
-    --success: #16a34a;
-    --success-soft: #dcfce7;
-    --accent: #2563eb;
-    --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-    --shadow-soft: 0 6px 18px rgba(15, 23, 42, 0.06);
-  }
+      :root {
+        --bg: #f8fafc;
+        --card: rgba(255, 255, 255, 0.94);
+        --card-strong: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #e2e8f0;
+        --primary: #0f172a;
+        --primary-soft: #e2e8f0;
+        --success: #16a34a;
+        --success-soft: #dcfce7;
+        --accent: #2563eb;
+        --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        --shadow-soft: 0 6px 18px rgba(15, 23, 42, 0.06);
+      }
 
-  * { box-sizing: border-box; }
+      * { box-sizing: border-box; }
 
-  html {
-    scroll-behavior: smooth;
-  }
+      html {
+        scroll-behavior: smooth;
+      }
 
-  body {
-    margin: 0;
-    font-family: Inter, Arial, sans-serif;
-    background:
-      radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 28%),
-      radial-gradient(circle at top right, rgba(22, 163, 74, 0.08), transparent 24%),
-      var(--bg);
-    color: var(--text);
-  }
+      body {
+        margin: 0;
+        font-family: Inter, Arial, sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 28%),
+          radial-gradient(circle at top right, rgba(22, 163, 74, 0.08), transparent 24%),
+          var(--bg);
+        color: var(--text);
+      }
 
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 24px;
-  }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px;
+      }
 
-  .grid {
-    display: grid;
-    gap: 20px;
-  }
+      .grid {
+        display: grid;
+        gap: 20px;
+      }
 
-  .top-grid {
-    grid-template-columns: 1.4fr 0.8fr;
-    align-items: stretch;
-  }
+      .top-grid {
+        grid-template-columns: 1.4fr 0.8fr;
+        align-items: stretch;
+      }
 
-  .main-grid {
-    grid-template-columns: 320px 1fr;
-    align-items: start;
-  }
+      .main-grid {
+        grid-template-columns: 320px 1fr;
+        align-items: start;
+      }
 
-  .card {
-    background: var(--card);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(226, 232, 240, 0.9);
-    border-radius: 24px;
-    padding: 22px;
-    box-shadow: var(--shadow);
-  }
+      .card {
+        background: var(--card);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        border-radius: 24px;
+        padding: 22px;
+        box-shadow: var(--shadow);
+      }
 
-  .hero-card {
-    background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(241,245,249,0.95));
-    overflow: hidden;
-    position: relative;
-  }
+      .hero-card {
+        background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(241,245,249,0.95));
+        overflow: hidden;
+        position: relative;
+      }
 
-  .hero-card::after {
-    content: "";
-    position: absolute;
-    right: -80px;
-    top: -80px;
-    width: 220px;
-    height: 220px;
-    background: radial-gradient(circle, rgba(37,99,235,0.14), transparent 70%);
-    pointer-events: none;
-  }
+      .hero-card::after {
+        content: "";
+        position: absolute;
+        right: -80px;
+        top: -80px;
+        width: 220px;
+        height: 220px;
+        background: radial-gradient(circle, rgba(37,99,235,0.14), transparent 70%);
+        pointer-events: none;
+      }
 
-  .hero-title {
-    font-size: clamp(32px, 4vw, 48px);
-    line-height: 1.05;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    margin: 0;
-    max-width: 900px;
-  }
+      .hero-title {
+        font-size: clamp(32px, 4vw, 48px);
+        line-height: 1.05;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin: 0;
+        max-width: 900px;
+      }
 
-  .hero-subtitle {
-    margin-top: 14px;
-    max-width: 720px;
-    color: var(--muted);
-    font-size: 16px;
-    line-height: 1.7;
-  }
+      .hero-subtitle {
+        margin-top: 14px;
+        max-width: 720px;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.7;
+      }
 
-  .hero-actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 22px;
-  }
+      .hero-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 22px;
+      }
 
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    border-radius: 999px;
-    background: #eaf2ff;
-    color: #1d4ed8;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 14px;
-    border: 1px solid #dbeafe;
-  }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: #eaf2ff;
+        color: #1d4ed8;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 14px;
+        border: 1px solid #dbeafe;
+      }
 
-  .status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--success-soft);
-    color: #166534;
-    border: 1px solid #bbf7d0;
-    padding: 8px 12px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 600;
-  }
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--success-soft);
+        color: #166534;
+        border: 1px solid #bbf7d0;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+      }
 
-  .prices-grid,
-  .vehicle-grid {
-    display: grid;
-    gap: 14px;
-  }
+      .prices-grid,
+      .vehicle-grid {
+        display: grid;
+        gap: 14px;
+      }
 
-  .prices-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    margin-top: 24px;
-  }
+      .prices-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        margin-top: 24px;
+      }
 
-  .vehicle-grid {
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  }
+      .vehicle-grid {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      }
 
-  .price-box,
-  .metric-box,
-  .rank-item,
-  .vehicle-card {
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 16px;
-    background: var(--card-strong);
-    box-shadow: var(--shadow-soft);
-    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-  }
+      .price-box,
+      .metric-box,
+      .rank-item,
+      .vehicle-card {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 16px;
+        background: var(--card-strong);
+        box-shadow: var(--shadow-soft);
+        transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      }
 
-  .price-box:hover,
-  .vehicle-card:hover,
-  .rank-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
-    border-color: #cbd5e1;
-  }
+      .price-box:hover,
+      .vehicle-card:hover,
+      .rank-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+        border-color: #cbd5e1;
+      }
 
-  .price-label {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    color: var(--muted);
-    font-size: 14px;
-  }
+      .price-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 14px;
+      }
 
-  .price-value,
-  .metric-value {
-    font-size: 30px;
-    font-weight: 800;
-    margin-top: 8px;
-    letter-spacing: -0.02em;
-  }
+      .price-value,
+      .metric-value {
+        font-size: 30px;
+        font-weight: 800;
+        margin-top: 8px;
+        letter-spacing: -0.02em;
+      }
 
-  .section-title {
-    margin: 0;
-    font-size: 24px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-  }
+      .section-title {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
 
-  .section-subtitle {
-    margin-top: 6px;
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.6;
-  }
+      .section-subtitle {
+        margin-top: 6px;
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
 
-  .muted {
-    color: var(--muted);
-  }
+      .muted {
+        color: var(--muted);
+      }
 
-  .label {
-    display: block;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 8px;
-  }
+      .label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
 
-  .field,
-  .select,
-  button {
-    width: 100%;
-    padding: 11px 14px;
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    font-size: 14px;
-    background: white;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-  }
+      .field,
+      .select,
+      button {
+        width: 100%;
+        padding: 11px 14px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        font-size: 14px;
+        background: white;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+      }
 
-  .field:focus,
-  .select:focus {
-    outline: none;
-    border-color: #93c5fd;
-    box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
-  }
+      .field:focus,
+      .select:focus {
+        outline: none;
+        border-color: #93c5fd;
+        box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+      }
 
-  button {
-    cursor: pointer;
-    font-weight: 600;
-  }
+      button {
+        cursor: pointer;
+        font-weight: 600;
+      }
 
-  button:hover {
-    transform: translateY(-1px);
-  }
+      button:hover {
+        transform: translateY(-1px);
+      }
 
-  .btn-primary {
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    color: white;
-    border-color: #0f172a;
-  }
+      .btn-primary {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: white;
+        border-color: #0f172a;
+      }
 
-  .btn-secondary {
-    background: white;
-    color: var(--text);
-    border: 1px solid var(--border);
-  }
+      .btn-secondary {
+        background: white;
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
 
-  .actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
 
-  .actions button {
-    width: auto;
-  }
+      .actions button {
+        width: auto;
+      }
 
-  .stack {
-    display: grid;
-    gap: 14px;
-  }
+      .stack {
+        display: grid;
+        gap: 14px;
+      }
 
-  .two-col {
-    display: grid;
-    gap: 12px;
-    grid-template-columns: 1fr 1fr;
-  }
+      .two-col {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 1fr 1fr;
+      }
 
-  .panel {
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 16px;
-    background: linear-gradient(180deg, #ffffff, #f8fafc);
-  }
+      .panel {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 16px;
+        background: linear-gradient(180deg, #ffffff, #f8fafc);
+      }
 
-  .panel-title {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
+      .panel-title {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
 
-  .panel-row {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.6;
-  }
+      .panel-row {
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.6;
+        word-break: break-word;
+      }
 
-  .result-box {
-    margin-top: 16px;
-    padding: 18px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    color: white;
-    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.18);
-  }
+      .result-box {
+        margin-top: 16px;
+        padding: 18px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: white;
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.18);
+      }
 
-  .winner {
-    display: inline-flex;
-    align-items: center;
-    background: var(--success);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-  }
+      .winner {
+        display: inline-flex;
+        align-items: center;
+        background: var(--success);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+      }
 
-  .rank-item {
-    display: block;
-  }
+      .rank-item {
+        display: block;
+      }
 
-  .rank-price {
-    font-size: 24px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-  }
+      .rank-price {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
 
-  .error-box {
-    border: 1px solid #fecaca;
-    background: #fef2f2;
-    color: #b91c1c;
-    padding: 12px;
-    border-radius: 14px;
-  }
+      .error-box {
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: #b91c1c;
+        padding: 12px;
+        border-radius: 14px;
+      }
 
-  .empty-box {
-    border: 1px dashed var(--border);
-    background: #fff;
-    color: var(--muted);
-    padding: 18px;
-    border-radius: 18px;
-    text-align: center;
-  }
+      .empty-box {
+        border: 1px dashed var(--border);
+        background: #fff;
+        color: var(--muted);
+        padding: 18px;
+        border-radius: 18px;
+        text-align: center;
+      }
 
-  .top-spread {
-    display: flex;
-    justify-content: space-between;
-    gap: 14px;
-    align-items: center;
-    flex-wrap: wrap;
-  }
+      .top-spread {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
 
-  @media (max-width: 900px) {
-    .top-grid,
-    .main-grid,
-    .two-col {
-      grid-template-columns: 1fr;
-    }
+      .footer {
+        padding-top: 0;
+        padding-bottom: 32px;
+      }
 
-    .container {
-      padding: 16px;
-    }
+      .footer-text {
+        font-size: 14px;
+        text-align: center;
+        color: var(--muted);
+      }
 
-    .card {
-      padding: 18px;
-      border-radius: 20px;
-    }
+      @media (max-width: 900px) {
+        .top-grid,
+        .main-grid,
+        .two-col {
+          grid-template-columns: 1fr;
+        }
 
-    .actions button {
-      width: 100%;
-    }
+        .container {
+          padding: 16px;
+        }
 
-    .hero-actions {
-      flex-direction: column;
-    }
-  }
-</style>
+        .card {
+          padding: 18px;
+          border-radius: 20px;
+        }
+
+        .actions button {
+          width: 100%;
+        }
+
+        .hero-actions {
+          flex-direction: column;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div class="container">
+    <header class="container">
       <div class="grid top-grid">
         <section class="card hero-card">
-  <div class="badge">Polska • aktualne ceny paliw • kalkulator kosztów</div>
+          <div class="badge">Polska • aktualne ceny paliw • kalkulator kosztów</div>
 
-  <div class="top-spread">
-    <div>
-      <h1 class="hero-title">Ceny paliw, koszt przejazdu i porównanie pojazdów</h1>
-      <p class="hero-subtitle">
-        Sprawdź aktualne ceny Pb95, Pb98, ON, LPG i prądu. Policz koszt trasy dla auta
-        spalinowego albo elektrycznego i porównaj wyniki między różnymi pojazdami.
-      </p>
-    </div>
-    <div class="status-badge">● Dane odświeżane z JSON</div>
-  </div>
+          <div class="top-spread">
+            <div>
+              <h1 class="hero-title">Ceny paliw, koszt przejazdu i porównanie pojazdów</h1>
+              <p class="hero-subtitle">
+                Sprawdź aktualne ceny Pb95, Pb98, ON, LPG i prądu. Policz koszt trasy dla auta
+                spalinowego albo elektrycznego i porównaj wyniki między różnymi pojazdami.
+              </p>
+            </div>
+            <div class="status-badge">● Dane odświeżane z JSON</div>
+          </div>
 
-  <div class="hero-actions">
-    <button class="btn-primary" id="heroAddIceBtn" type="button">Dodaj auto spalinowe</button>
-    <button class="btn-secondary" id="heroAddEvBtn" type="button">Dodaj auto elektryczne</button>
-  </div>
+          <div class="hero-actions">
+            <button class="btn-primary" id="heroAddIceBtn" type="button">Dodaj auto spalinowe</button>
+            <button class="btn-secondary" id="heroAddEvBtn" type="button">Dodaj auto elektryczne</button>
+          </div>
 
-  <div id="errorBox" style="margin-top:18px;"></div>
-  <div id="priceCards" class="prices-grid"></div>
-</section>
+          <div id="errorBox" style="margin-top:18px;"></div>
+          <div id="priceCards" class="prices-grid"></div>
+        </section>
 
         <aside class="card stack">
-  <div>
-    <h2 class="section-title">Źródło i aktualizacja</h2>
-    <p class="section-subtitle">
-      Strona korzysta z danych zapisanych w pliku JSON aktualizowanym automatycznie przez GitHub Actions.
-    </p>
-  </div>
+          <div>
+            <h2 class="section-title">Źródło i aktualizacja</h2>
+            <p class="section-subtitle">
+              Strona korzysta z danych zapisanych w pliku JSON aktualizowanym automatycznie przez GitHub Actions.
+            </p>
+          </div>
 
-  <div class="panel">
-    <div class="panel-title">Źródło danych</div>
-    <div class="panel-row" id="sourceName">Ładowanie...</div>
-  </div>
+          <div class="panel">
+            <div class="panel-title">Źródło danych</div>
+            <div class="panel-row" id="sourceName">Ładowanie...</div>
+          </div>
 
-  <div class="panel">
-    <div class="panel-title">Ostatnia aktualizacja</div>
-    <div class="panel-row" id="updatedAt">Ładowanie...</div>
-  </div>
+          <div class="panel">
+            <div class="panel-title">Ostatnia aktualizacja</div>
+            <div class="panel-row" id="updatedAt">Ładowanie...</div>
+          </div>
 
-  <div class="panel">
-    <div class="panel-title">Uwaga</div>
-    <div class="panel-row">
-      Cena prądu jest przechowywana w JSON i może być edytowana ręcznie lub rozszerzona o osobne źródło.
-    </div>
-  </div>
-</aside>
+          <div class="panel">
+            <div class="panel-title">Uwaga</div>
+            <div class="panel-row">
+              Cena prądu jest przechowywana w JSON i może być edytowana ręcznie lub rozszerzona o osobne źródło.
+            </div>
+          </div>
+        </aside>
       </div>
+    </header>
 
-      <div class="grid main-grid" style="margin-top: 20px;">
+    <main class="container">
+      <div class="grid main-grid">
         <aside class="card">
           <h2 class="section-title">Aktualne ceny</h2>
-<p class="section-subtitle">Możesz zmieniać stawki ręcznie, żeby symulować lokalne ceny paliwa lub prądu.</p>
+          <p class="section-subtitle">Możesz zmieniać stawki ręcznie, żeby symulować lokalne ceny paliwa lub prądu.</p>
+          <div id="priceEditor" class="stack" style="margin-top:16px;"></div>
         </aside>
 
-        <main class="stack">
+        <div class="stack">
           <section class="card">
             <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;">
               <div>
-  <h2 class="section-title" style="margin:0;">Pojazdy do porównania</h2>
-  <p class="section-subtitle">Dodawaj auta spalinowe i elektryczne, a ranking zaktualizuje się automatycznie.</p>
-</div>
+                <h2 class="section-title" style="margin:0;">Pojazdy do porównania</h2>
+                <p class="section-subtitle">Dodawaj auta spalinowe i elektryczne, a ranking zaktualizuje się automatycznie.</p>
+              </div>
               <div class="actions">
                 <button class="btn-primary" id="addIceBtn" type="button">Dodaj auto</button>
-                <button id="addEvBtn" type="button">Dodaj EV</button>
+                <button class="btn-secondary" id="addEvBtn" type="button">Dodaj EV</button>
               </div>
             </div>
             <div id="vehicles" class="vehicle-grid" style="margin-top:16px;"></div>
@@ -457,12 +500,18 @@
 
           <section class="card">
             <h2 class="section-title">Ranking kosztów</h2>
-<p class="section-subtitle">Porównanie całkowitego kosztu przejazdu dla wszystkich dodanych pojazdów.</p>
-            <div id="ranking" class="stack"></div>
+            <p class="section-subtitle">Porównanie całkowitego kosztu przejazdu dla wszystkich dodanych pojazdów.</p>
+            <div id="ranking" class="stack" style="margin-top:16px;"></div>
           </section>
-        </main>
+        </div>
       </div>
-    </div>
+    </main>
+
+    <footer class="container footer">
+      <div class="footer-text">
+        Aktualne ceny paliw i kalkulator kosztów przejazdu w Polsce.
+      </div>
+    </footer>
 
     <script>
       const fuelMeta = {
@@ -561,15 +610,15 @@
         container.innerHTML = Object.keys(fuelMeta).map((key) => {
           const meta = fuelMeta[key];
           return `
-  <div class="price-box">
-    <div class="price-label">
-      <span>${meta.label}</span>
-      <span>●</span>
-    </div>
-    <div class="price-value">${formatNumber(state.prices[key])}</div>
-    <div class="muted">${meta.unit}</div>
-  </div>
-`;
+            <div class="price-box">
+              <div class="price-label">
+                <span>${meta.label}</span>
+                <span>●</span>
+              </div>
+              <div class="price-value">${formatNumber(state.prices[key])}</div>
+              <div class="muted">${meta.unit}</div>
+            </div>
+          `;
         }).join("");
       }
 
@@ -579,7 +628,7 @@
           const meta = fuelMeta[key];
           return `
             <div>
-              <label class="muted" for="price-${key}">${meta.label}</label>
+              <label class="label" for="price-${key}">${meta.label}</label>
               <input class="field" id="price-${key}" type="number" step="0.01" value="${state.prices[key]}" />
               <div class="muted" style="font-size:12px;margin-top:4px;">${meta.unit}</div>
             </div>
@@ -640,7 +689,7 @@
           const fuelSelect = vehicle.type === "ice"
             ? `
               <div style="margin-top:14px;">
-                <label class="muted">Rodzaj paliwa</label>
+                <label class="label">Rodzaj paliwa</label>
                 <select class="select" data-id="${vehicle.id}" data-key="fuelType">
                   <option value="pb95" ${vehicle.fuelType === "pb95" ? "selected" : ""}>Pb95</option>
                   <option value="pb98" ${vehicle.fuelType === "pb98" ? "selected" : ""}>Pb98</option>
@@ -651,7 +700,7 @@
             `
             : `
               <div style="margin-top:14px;">
-                <label class="muted">Straty ładowania (%)</label>
+                <label class="label">Straty ładowania (%)</label>
                 <input class="field" type="number" step="1" data-id="${vehicle.id}" data-key="chargingLoss" value="${vehicle.chargingLoss}" />
               </div>
             `;
@@ -659,12 +708,12 @@
           return `
             <div class="vehicle-card">
               <div style="display:flex;gap:12px;align-items:flex-start;justify-content:space-between;">
-  <div style="flex:1;">
-    <label class="label">Nazwa pojazdu</label>
-    <input class="field" data-id="${vehicle.id}" data-key="name" value="${escapeHtml(vehicle.name)}" />
-  </div>
-  <button data-remove="${vehicle.id}" type="button" style="width:auto;">Usuń</button>
-</div>
+                <div style="flex:1;">
+                  <label class="label">Nazwa pojazdu</label>
+                  <input class="field" data-id="${vehicle.id}" data-key="name" value="${escapeHtml(vehicle.name)}" />
+                </div>
+                <button data-remove="${vehicle.id}" type="button" style="width:auto;">Usuń</button>
+              </div>
 
               <div class="two-col" style="margin-top:14px;">
                 <button data-set-type="ice" data-id="${vehicle.id}" type="button" ${vehicle.type === "ice" ? 'style="background:#dbeafe;"' : ""}>Spalinowe</button>
@@ -675,12 +724,12 @@
 
               <div class="two-col" style="margin-top:14px;">
                 <div>
-                  <label class="muted">${vehicle.type === "ev" ? "Zużycie energii" : "Spalanie"}</label>
+                  <label class="label">${vehicle.type === "ev" ? "Zużycie energii" : "Spalanie"}</label>
                   <input class="field" type="number" step="0.1" data-id="${vehicle.id}" data-key="consumption" value="${vehicle.consumption}" />
                   <div class="muted" style="font-size:12px;margin-top:4px;">${vehicle.type === "ev" ? "kWh / 100 km" : "l / 100 km"}</div>
                 </div>
                 <div>
-                  <label class="muted">Dystans</label>
+                  <label class="label">Dystans</label>
                   <input class="field" type="number" step="1" data-id="${vehicle.id}" data-key="distance" value="${vehicle.distance}" />
                   <div class="muted" style="font-size:12px;margin-top:4px;">km</div>
                 </div>
@@ -742,13 +791,15 @@
           .map((vehicle) => ({ vehicle, metrics: computeVehicle(vehicle) }))
           .sort((a, b) => a.metrics.totalCost - b.metrics.totalCost);
 
+        if (!ranking.length) {
+          document.getElementById("ranking").innerHTML =
+            '<div class="empty-box">Dodaj pierwszy pojazd, aby zobaczyć ranking kosztów.</div>';
+          return;
+        }
+
         const cheapestCost = ranking.length ? ranking[0].metrics.totalCost : 0;
 
-        if (!ranking.length) {
-  document.getElementById("ranking").innerHTML =
-    '<div class="empty-box">Dodaj pierwszy pojazd, aby zobaczyć ranking kosztów.</div>';
-  return;
-}
+        document.getElementById("ranking").innerHTML = ranking.map((entry, index) => {
           const vehicle = entry.vehicle;
           const metrics = entry.metrics;
           const diff = metrics.totalCost - cheapestCost;
@@ -765,9 +816,9 @@
                   </div>
                 </div>
                 <div style="text-align:right;">
-  <div class="rank-price">${formatCurrency(metrics.totalCost)}</div>
-  <div class="muted">${index === 0 ? "Najniższy koszt" : "+" + formatCurrency(diff) + " względem lidera"}</div>
-</div>
+                  <div class="rank-price">${formatCurrency(metrics.totalCost)}</div>
+                  <div class="muted">${index === 0 ? "Najniższy koszt" : "+" + formatCurrency(diff) + " względem lidera"}</div>
+                </div>
               </div>
             </div>
           `;
